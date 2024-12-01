@@ -36,7 +36,7 @@ fn part1() -> anyhow::Result<i64> {
 
     let sum = left
         .into_iter()
-        .zip(right.into_iter())
+        .zip(right)
         .map(|(left, right)| (left - right).abs())
         .sum();
 
