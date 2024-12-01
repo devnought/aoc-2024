@@ -55,7 +55,10 @@ fn part2() -> anyhow::Result<i64> {
 
     let mut right_map: HashMap<i64, i64> = HashMap::new();
     for num in right.into_iter() {
-        *right_map.entry(num).or_default() += 1;
+        right_map
+            .entry(num)
+            .and_modify(|num| *num += 1)
+            .or_insert(1);
     }
 
     let sum = left
