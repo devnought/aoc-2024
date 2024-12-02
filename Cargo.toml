@@ -1,8 +1,9 @@
 [workspace]
 resolver = "2"
-members = ["day01"]
+members = ["day01", "day02"]
 
 [workspace.dependencies]
+anyhow = "1.0.93"
 nom = "7.1.3"
 
 [profile.release]
