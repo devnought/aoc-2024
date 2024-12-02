@@ -53,7 +53,7 @@ fn part2() -> anyhow::Result<i64> {
         .filter_map(|line| parser(&line).finish().ok().map(|(_, data)| data))
         .unzip();
 
-    let mut right_map: HashMap<i64, i64> = HashMap::new();
+    let mut right_map = HashMap::new();
     for num in right.into_iter() {
         right_map
             .entry(num)
