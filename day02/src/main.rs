@@ -10,6 +10,7 @@ use nom::{
     sequence::tuple,
     Finish, IResult,
 };
+use util::IterWindowIterator;
 
 fn main() -> anyhow::Result<()> {
     let part1 = part1()?;
@@ -36,7 +37,7 @@ fn part1() -> anyhow::Result<i64> {
             let mut sum = 0;
 
             for diff in iter {
-                if !(1..=3).contains(&diff.abs()) {
+                if !(1..4).contains(&diff.abs()) {
                     return 0;
                 }
 
@@ -66,21 +67,24 @@ fn part2() -> anyhow::Result<i64> {
     let safe = data
         .map(|report| {
             for index in 0..report.len() {
-                let mut report = report.clone();
-                report.remove(index);
+                let iter = report
+                    .iter()
+                    .enumerate()
+                    .filter_map(|(i, num)| if i == index { None } else { Some(*num) })
+                    .iter_window::<2>()
+                    .map(|[left, right]| left - right);
 
-                let iter = report.as_slice().windows(2).map(|s| s[0] - s[1]);
                 let mut sum = 0;
 
                 for diff in iter {
-                    if !(1..=3).contains(&diff.abs()) {
+                    if !(1..4).contains(&diff.abs()) {
                         continue;
                     }
 
                     sum += diff.signum();
                 }
 
-                if sum.abs() == (report.len() - 1) as i64 {
+                if sum.abs() == (report.len() - 2) as i64 {
                     return 1;
                 }
             }

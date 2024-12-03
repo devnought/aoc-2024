@@ -9,6 +9,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4c95c10ba0b00a02636238b814946408b1322d5ac4760326e6fb8ec956d85775"
 
 [[package]]
+name = "arraydeque"
+version = "0.5.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7d902e3d592a523def97af8f317b08ce16b7ab854c1985a0c671e6f15cebc236"
+
+[[package]]
 name = "day01"
 version = "0.1.0"
 dependencies = [
@@ -22,6 +28,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "nom",
+ "util",
 ]
 
 [[package]]
@@ -44,4 +51,11 @@ checksum = "d273983c5a657a70a3e8f2a01329822f3b8c8172b73826411a55751e404a0a4a"
 dependencies = [
  "memchr",
  "minimal-lexical",
+]
+
+[[package]]
+name = "util"
+version = "0.1.0"
+dependencies = [
+ "arraydeque",
 ]
