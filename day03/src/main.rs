@@ -25,8 +25,11 @@ fn part1() -> anyhow::Result<i64> {
     let mut input = raw_input.as_str();
     let mut sum = 0;
 
-    while let Some((remaining, (left, right))) = mul_parser_part_1(input).finish().ok() {
-        sum += left * right;
+    while let Ok((remaining, instruction)) = combo_parser(input).finish() {
+        if let Instruction::Mul(left, right) = instruction {
+            sum += left * right;
+        };
+
         input = remaining;
     }
 
@@ -39,7 +42,7 @@ fn part2() -> anyhow::Result<i64> {
     let mut sum = 0;
     let mut enabled = true;
 
-    while let Some((remaining, instruction)) = combo_parser(input).finish().ok() {
+    while let Ok((remaining, instruction)) = combo_parser(input).finish() {
         match instruction {
             Instruction::Do => enabled = true,
             Instruction::DoNot => enabled = false,
@@ -53,16 +56,11 @@ fn part2() -> anyhow::Result<i64> {
     Ok(sum)
 }
 
+#[derive(Debug)]
 enum Instruction {
     Mul(i64, i64),
     Do,
     DoNot,
-}
-
-fn mul_parser_part_1(input: &str) -> IResult<&str, (i64, i64)> {
-    let parser = tuple((tag("mul"), char('('), i64, char(','), i64, char(')')));
-    let many_parser = many_till(anychar, parser);
-    map(many_parser, |(_, (_, _, left, _, right, _))| (left, right))(input)
 }
 
 fn mul_parser(input: &str) -> IResult<&str, Instruction> {
