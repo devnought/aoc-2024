@@ -1,12 +1,10 @@
-use std::{
-    fs::File,
-    io::{BufRead, BufReader},
-};
+use std::fs;
 
 use nom::{
-    character::complete::{i64, space0},
+    branch::alt,
+    bytes::complete::tag,
+    character::complete::{char, i64},
     combinator::map,
-    multi::many1,
     sequence::tuple,
     Finish, IResult,
 };
@@ -22,21 +20,84 @@ fn main() -> anyhow::Result<()> {
 }
 
 fn part1() -> anyhow::Result<i64> {
-    let file = File::open("./sample.txt")?;
-    let reader = BufReader::new(file);
+    let raw_input = fs::read_to_string("./input.txt")?;
+    let mut input = raw_input.as_str();
+    let mut sum = 0;
 
-    Ok(0)
+    loop {
+        if input.is_empty() {
+            break;
+        }
+
+        let Ok((remaining, (left, right))) = mul_parser_part_1(input).finish() else {
+            input = &input[1..];
+            continue;
+        };
+
+        sum += left * right;
+        input = remaining;
+    }
+
+    Ok(sum)
 }
 
 fn part2() -> anyhow::Result<i64> {
-    let file = File::open("./sample.txt")?;
-    let reader = BufReader::new(file);
+    let raw_input = fs::read_to_string("./input.txt")?;
+    let mut input = raw_input.as_str();
+    let mut sum = 0;
+    let mut enabled = true;
 
-    Ok(0)
+    loop {
+        if input.is_empty() {
+            break;
+        }
+
+        let Ok((remaining, instruction)) = combo_parser(input).finish() else {
+            input = &input[1..];
+            continue;
+        };
+
+        match instruction {
+            Instruction::Do => enabled = true,
+            Instruction::DoNot => enabled = false,
+            Instruction::Mul(left, right) if enabled => sum += left * right,
+            _ => {}
+        }
+
+        input = remaining;
+    }
+
+    Ok(sum)
 }
 
-fn parser(input: &str) -> IResult<&str, Vec<i64>> {
-    let parser = tuple((i64, space0));
-    let repeating = many1(parser);
-    map(repeating, |r| r.into_iter().map(|(num, _)| num).collect())(input)
+enum Instruction {
+    Mul(i64, i64),
+    Do,
+    DoNot,
+}
+
+fn mul_parser_part_1(input: &str) -> IResult<&str, (i64, i64)> {
+    let parser = tuple((tag("mul"), char('('), i64, char(','), i64, char(')')));
+    map(parser, |(_, _, left, _, right, _)| (left, right))(input)
+}
+
+fn mul_parser(input: &str) -> IResult<&str, Instruction> {
+    let parser = tuple((tag("mul"), char('('), i64, char(','), i64, char(')')));
+    map(parser, |(_, _, left, _, right, _)| {
+        Instruction::Mul(left, right)
+    })(input)
+}
+
+fn do_parser(input: &str) -> IResult<&str, Instruction> {
+    let parser = tuple((tag("do"), char('('), char(')')));
+    map(parser, |_| Instruction::Do)(input)
+}
+
+fn do_not_parser(input: &str) -> IResult<&str, Instruction> {
+    let parser = tuple((tag("don't"), char('('), char(')')));
+    map(parser, |_| Instruction::DoNot)(input)
+}
+
+fn combo_parser(input: &str) -> IResult<&str, Instruction> {
+    alt((mul_parser, do_parser, do_not_parser))(input)
 }
