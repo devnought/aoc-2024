@@ -34,7 +34,7 @@ where
 }
 
 pub trait IterWindowIterator<T>: Iterator<Item = T> + Sized {
-    fn iter_window<const N: usize>(self) -> IterWindow<Self, N> {
+    fn iter_windows<const N: usize>(self) -> IterWindow<Self, N> {
         IterWindow {
             iter: self,
             buffer: ArrayDeque::new(),
@@ -51,7 +51,7 @@ mod tests {
     #[test]
     fn it_works() {
         let data = [0u8, 2, 4, 6, 8];
-        let data_pairs = data.into_iter().iter_window::<2>().collect::<Vec<_>>();
+        let data_pairs = data.into_iter().iter_windows::<2>().collect::<Vec<_>>();
 
         println!("{data_pairs:?}");
 

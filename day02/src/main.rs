@@ -71,7 +71,7 @@ fn part2() -> anyhow::Result<i64> {
                     .iter()
                     .enumerate()
                     .filter_map(|(i, num)| if i == index { None } else { Some(*num) })
-                    .iter_window::<2>()
+                    .iter_windows::<2>()
                     .map(|[left, right]| left - right);
 
                 let mut sum = 0;
